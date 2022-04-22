@@ -1,0 +1,61 @@
+Part 1: Install Windows Subsystem for Linux
+wsl –install
+sudo apt update
+sudo apt full-upgrade
+
+
+Part 2: Install dev tools on your Linux distro
+sudo apt install -y python3-pip
+sudo apt install -y build-essential libssl-dev libffi-dev python3-dev
+sudo apt-get install libgmp-dev
+pip3 install fastecdsa
+
+sudo apt-get install -y pkg-config
+
+Part 3: Install Rust
+Run
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+Just in case if there was something left uninstalled in previous step then run
+
+sudo apt install cargo
+
+Update your Rust to the latest version
+
+rustup update stable
+
+Part 4: Clone pathfinder github repository
+git clone --branch v0.1.8-alpha 
+https://github.com/eqlabs/pathfinder.git
+
+Part 5: Create a virtual environment for a node
+sudo apt install python3.8-venv
+
+Move to py folder by typing
+
+cd pathfinder/py
+python3 -m venv .venv
+
+and activate it
+
+source .venv/bin/activate
+PIP_REQUIRE_VIRTUALENV=true pip install --upgrade pip
+
+then
+
+PIP_REQUIRE_VIRTUALENV=true pip install -r requirements-dev.txt
+
+Test if your previous steps were successful by running
+
+pytest
+
+Part 6: Assemble your node
+cargo build --release --bin pathfinder
+
+Part 7: Run your node
+cargo run --release --bin pathfinder -- --ethereum.url https://mainnet.infura.io/v3/xxxxx
+
+or in case you are using Alchemy API (replace the xxxxx with your Alchemy API key)
+
+cargo run --release --bin pathfinder -- --ethereum.url https://eth-goerli.alchemyapi.io/v2/xxxxx
