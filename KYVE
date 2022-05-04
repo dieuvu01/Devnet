@@ -1,0 +1,127 @@
+How to run a node Kyve evm pools v.1.0.3 and other polls
+KYVE-is a decentralized archiving and caching solution that allows modern blockchains and decentralized applications (dApps) to securely store and serve data. Our mission is quite ambitious, but necessary: ​​as ardent supporters of Web 3.0, we want to help projects achieve infinite scalability by storing their data securely and persistently.
+
+To install the node, we need a server with Ubuntu 20.04
+
+You also need to install the Keplr wallet https://www.keplr.app/
+
+Create a wallet and save the mnemonic seed
+
+Next go https://faucet.arweave.net/
+
+
+Press CONTINUE
+
+
+We accept all conditions, and make a tweet. Next, save the json file
+
+Next, go to the website https://app.kyve.network/. We connect your wallet.
+
+you can get test tokens in the section https://app.kyve.network/#/faucet
+
+go to the terminal and start the node launch process.
+
+update all packages
+
+sudo apt update && apt install unzip
+
+Create a directory, go there and download the binary
+
+mkdir -p /home/kyve
+
+cd /home/kyve && wget https://github.com/KYVENetwork/evm/releases/download/v1.0.3/evm-linux.zip && unzip evm-linux.zip
+
+version check
+
+cd /home/kyve && ./evm-linux --version
+
+if you want to be a validator in the Stacks pool 
+mkdir -p /home/kyve
+
+cd /home/kyve && wget https://github.com/kyve-org/stacks/releases/download/v0.0.2/stacks-linux.zip && unzip stacks-linux.zip
+
+version check
+
+cd /home/kyve && ./stacks-linux --version
+
+if you want to be a validator in the Bitcoin poll
+mkdir -p /home/kyve
+
+cd /home/kyve && wget https://github.com/kyve-org/bitcoin/releases/download/v0.0.0/kyve-bitcoin-linux.zip && unzip kyve-bitcoin-linux.zip
+
+version check
+
+cd /home/kyve && ./bitcoin-linux --version
+
+make the binary executable
+
+chmod +x evm-linux
+
+if you want to be a validator in the Stacks pool
+chmod +x stacks-linux
+
+if you want to be a validator in the Bitcoin poll
+chmod +x bitcoin-linux
+
+If you work through MobaXterm, copy the json to the /home/kyve folder, after renaming your json file to arweave.json
+
+Next we create the service. We change only your data, marked below.
+
+sudo tee /etc/systemd/system/kyved.service > /dev/null <<EOF
+[Unit]
+Description=Kyve Node
+After=network-online.target
+[Service]
+User=root
+WorkingDirectory=/home/kyve/
+ExecStart=/home/kyve/evm-linux -m “mnemonic phrase” -k /home/kyve/arweave.json -p 0 or 1 -v -s your amount stake
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+
+if you want to be a validator in the Stacks pool
+sudo tee /etc/systemd/system/kyved.service > /dev/null <<EOF
+[Unit]
+Description=Kyve Node
+After=network-online.target
+[Service]
+User=root
+WorkingDirectory=/home/kyve/
+ExecStart=/home/kyve/stacks-linux -m “mnemonic phrase” -k /home/kyve/arweave.json -p 2 -v -s your amount stake
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+
+if you want to be a validator in the Bitcoin poll
+sudo tee /etc/systemd/system/kyved.service > /dev/null <<EOF
+[Unit]
+Description=Kyve Node
+After=network-online.target
+[Service]
+User=root
+WorkingDirectory=/home/kyve/
+ExecStart=/home/kyve/bitcoin-linux -m “mnemonic phrase” -k /home/kyve/arweave.json -p 3 -v -s your amount stake
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+
+Next, we start our service
+
+sudo systemctl daemon-reload
+sudo systemctl enable kyved
+sudo systemctl start kyved
+
+View logs
+
+journalctl -f -u kyved
+
+Congratulations, you have become a validator!
